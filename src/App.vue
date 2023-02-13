@@ -1,11 +1,17 @@
 <script lang="ts">
   import HelloWorld from './components/HelloWorld.vue'
   import liff from '@line/liff'
-import { onBeforeMount } from '@vue/runtime-core'
+  import jwt_decode from 'jwt-decode'
+
+  import { onBeforeMount } from '@vue/runtime-core'
+  import { ref } from 'vue'
 
 
   export default {
     setup(){
+      const userImge = ref<String>('');
+
+
       const initLine = () =>{
         liff.init({liffId:'1657884946-MV1Anl8n'},() => {
           if(liff.isLoggedIn()){
@@ -19,7 +25,14 @@ import { onBeforeMount } from '@vue/runtime-core'
 
       const runApp = () =>{
         const idToken = liff.getIDToken();
-        liff.getProfile().then(profile => { console.log(profile) });
+        var decode = jwt_decode(idToken);
+        console.log(decode);
+        liff.getProfile().then(profile => { 
+          console.log(profile)
+          userImge.value = profile.pictureUrl;
+          
+        });
+        liff.getProfilePlus();
       }
       const Logout = () =>{
         liff.logout();
@@ -37,6 +50,9 @@ import { onBeforeMount } from '@vue/runtime-core'
 
 <template>
   <div>
+    <div>
+      <img :src="userImge" width="100" height="100">
+    </div>
     <a href="https://vitejs.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo" />
     </a>
