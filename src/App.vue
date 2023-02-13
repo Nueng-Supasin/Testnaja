@@ -1,5 +1,38 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+  import HelloWorld from './components/HelloWorld.vue'
+  import liff from '@line/liff'
+import { onBeforeMount } from '@vue/runtime-core'
+
+
+  export default {
+    setup(){
+      const initLine = () =>{
+        liff.init({liffId:'1657884946-MV1Anl8n'},() => {
+          if(liff.isLoggedIn()){
+            runApp();
+          }
+          else{
+            liff.login();
+          }
+        },err => console.error(err));
+      }
+
+      const runApp = () =>{
+        const idToken = liff.getIDToken();
+        liff.getProfile().then(profile => { console.log(profile) });
+      }
+      const Logout = () =>{
+        liff.logout();
+        window.location.reload();
+      }
+      
+      onBeforeMount(() => {
+        initLine();
+      })
+
+      return { initLine, runApp, Logout }
+    }
+  }
 </script>
 
 <template>
@@ -12,6 +45,7 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  <button type="button" @click="Logout"> Logout</button>
 </template>
 
 <style scoped>
